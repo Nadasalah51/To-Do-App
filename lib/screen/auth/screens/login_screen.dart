@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         child: Form(
+          key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 minWidth: double.infinity,
                 height: 48,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(10),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   'Next',
