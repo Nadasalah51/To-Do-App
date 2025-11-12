@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:taskey_app/screen/auth/screens/login_screen.dart';
 import 'package:taskey_app/screen/auth/screens/register_screen.dart';
@@ -26,4 +27,5 @@ class ToDoApp extends StatelessWidget {
       },
     );
   }
-}
+
+  }

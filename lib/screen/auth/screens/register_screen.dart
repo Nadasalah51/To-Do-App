@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
 import 'package:taskey_app/screen/auth/screens/login_screen.dart';
 import 'package:taskey_app/screen/auth/widgets/inkwell_widget.dart';
 import 'package:taskey_app/screen/auth/widgets/text_form_feild_widget.dart';
+import 'package:taskey_app/utils/app_dialog.dart';
 import 'package:taskey_app/utils/valditor.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -98,7 +100,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 5),
               TextFormFieldWidget(
                 controller: confirmPassword,
-                validator: Validator.validatePassword,
+                validator: (text) {
+                  return Validator.validateConfirmPassword(text, password.text);
+                },
                 hintText: 'confirm password',
                 isPassword: true,
                 obscureText: true,
@@ -106,9 +110,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               SizedBox(height: 71),
               MaterialButton(
-                onPressed: () {
+                onPressed: () async {
                   if (formKey.currentState!.validate()) {
-                    Navigator.pushNamed(context, LoginScreen.routeName);
+                    AppDialog.showLoading(context);
+                    await register(email: email.text, password: password.text)
+                        .then((value) {
+                          Navigator.of(context).pop();
+                          fullName.clear();
+                          email.clear();
+                          password.clear();
+                          confirmPassword.clear();
+                          Navigator.of(
+                            context,
+                          ).pushReplacementNamed(LoginScreen.routeName);
+                        })
+                        .catchError((error) {
+                          Navigator.of(context).pop();
+                          AppDialog.showError(context, error: error);
+                        });
                   }
                 },
                 color: themeColor,
@@ -131,10 +150,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
       floatingActionButton: InKWellWidget(
-        title: 'Donot have an account? ',
-        subTitle: 'Register',
+        title: 'Already have an account? ',
+        subTitle: 'Login',
         routePath: LoginScreen.routeName,
       ),
     );
+  }
+
+  Future<void> register({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) => print('add user'))
+          .catchError((value) => print('error'));
+    } catch (e) {
+      throw 'Error from firebaseexseption';
+    }
   }
 }

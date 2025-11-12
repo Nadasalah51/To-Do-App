@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
 import 'package:taskey_app/screen/auth/screens/register_screen.dart';
 import 'package:taskey_app/screen/auth/widgets/inkwell_widget.dart';
 import 'package:taskey_app/screen/auth/widgets/text_form_feild_widget.dart';
+import 'package:taskey_app/utils/app_dialog.dart';
 import 'package:taskey_app/utils/valditor.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -71,7 +73,17 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    Navigator.pushNamed(context, RegisterScreen.routeName);
+                    AppDialog.showLoading(context);
+                    login(email: email.text, password: password.text)
+                        .then((_) {
+                          Navigator.of(context).pop();
+                          email.clear();
+                          password.clear();
+                        })
+                        .catchError((error) {
+                          Navigator.of(context).pop();
+                          AppDialog.showError(context, error: error);
+                        });
                   }
                 },
                 color: themeColor,
@@ -99,5 +111,16 @@ class _LoginScreenState extends State<LoginScreen> {
         routePath: RegisterScreen.routeName,
       ),
     );
+  }
+
+  Future<void> login({required String email, required String password}) async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      throw 'Error from firebaseexseption';
+    }
   }
 }
