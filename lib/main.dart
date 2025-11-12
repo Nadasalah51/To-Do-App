@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:taskey_app/screen/auth/screens/login_screen.dart';
 import 'package:taskey_app/screen/auth/screens/register_screen.dart';
 import 'package:taskey_app/screen/onboarding_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(ToDoApp());
 }
 
