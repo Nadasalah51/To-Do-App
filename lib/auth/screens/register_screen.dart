@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
 import 'package:taskey_app/auth/data/firebase/firebase_database_user.dart';
