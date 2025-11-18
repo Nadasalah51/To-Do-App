@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
-import 'package:taskey_app/screen/auth/screens/register_screen.dart';
-import 'package:taskey_app/screen/auth/widgets/inkwell_widget.dart';
-import 'package:taskey_app/screen/auth/widgets/text_form_feild_widget.dart';
-import 'package:taskey_app/utils/app_dialog.dart';
-import 'package:taskey_app/utils/valditor.dart';
+import 'package:taskey_app/auth/data/firebase/firebase_database_user.dart';
+import 'package:taskey_app/core/network/result_firebase.dart';
+import 'package:taskey_app/auth/screens/register_screen.dart';
+import 'package:taskey_app/auth/widgets/inkwell_widget.dart';
+import 'package:taskey_app/auth/widgets/text_form_feild_widget.dart';
+import 'package:taskey_app/core/utils/app_dialog.dart';
+import 'package:taskey_app/core/utils/valditor.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,21 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 71),
               MaterialButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    AppDialog.showLoading(context);
-                    login(email: email.text, password: password.text)
-                        .then((_) {
-                          Navigator.of(context).pop();
-                          email.clear();
-                          password.clear();
-                        })
-                        .catchError((error) {
-                          Navigator.of(context).pop();
-                          AppDialog.showError(context, error: error);
-                        });
-                  }
-                },
+                onPressed: onPressedLogin,
                 color: themeColor,
                 minWidth: double.infinity,
                 height: 48,
@@ -113,14 +101,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> login({required String email, required String password}) async {
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+  void onPressedLogin() async {
+    if (formKey.currentState!.validate()) {
+      AppDialog.showLoading(context);
+      final result = await FBAUser.loginUser(
+        email: email.text,
+        password: password.text,
       );
-    } catch (e) {
-      throw 'Error from firebaseexseption';
+      switch (result) {
+        case SuccessFB<UserCredential>():
+          Navigator.of(context).pop();
+          email.clear();
+          password.clear();
+        case ErrorFB<UserCredential>():
+          Navigator.of(context).pop();
+          AppDialog.showError(context, error: result.messageError);
+      }
     }
   }
 }

@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
-import 'package:taskey_app/screen/auth/screens/login_screen.dart';
-import 'package:taskey_app/screen/auth/widgets/inkwell_widget.dart';
-import 'package:taskey_app/screen/auth/widgets/text_form_feild_widget.dart';
-import 'package:taskey_app/utils/app_dialog.dart';
-import 'package:taskey_app/utils/valditor.dart';
+import 'package:taskey_app/auth/data/firebase/firebase_database_user.dart';
+import 'package:taskey_app/auth/data/model/user_model.dart';
+import 'package:taskey_app/core/network/result_firebase.dart';
+import 'package:taskey_app/auth/screens/login_screen.dart';
+import 'package:taskey_app/auth/widgets/inkwell_widget.dart';
+import 'package:taskey_app/auth/widgets/text_form_feild_widget.dart';
+import 'package:taskey_app/core/utils/app_dialog.dart';
+import 'package:taskey_app/core/utils/valditor.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String routeName = '/register_screen';
@@ -110,26 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
               SizedBox(height: 71),
               MaterialButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    AppDialog.showLoading(context);
-                    await register(email: email.text, password: password.text)
-                        .then((value) {
-                          Navigator.of(context).pop();
-                          fullName.clear();
-                          email.clear();
-                          password.clear();
-                          confirmPassword.clear();
-                          Navigator.of(
-                            context,
-                          ).pushReplacementNamed(LoginScreen.routeName);
-                        })
-                        .catchError((error) {
-                          Navigator.of(context).pop();
-                          AppDialog.showError(context, error: error);
-                        });
-                  }
-                },
+                onPressed: onPressedRegister,
                 color: themeColor,
                 minWidth: double.infinity,
                 height: 48,
@@ -157,17 +141,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Future<void> register({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) => print('add user'))
-          .catchError((value) => print('error'));
-    } catch (e) {
-      throw 'Error from firebaseexseption';
+  void onPressedRegister() async {
+    if (formKey.currentState!.validate()) {
+      AppDialog.showLoading(context);
+      final result = await FBAUser.registerUser(
+        UserModel(
+          email: email.text,
+          password: password.text,
+          name: fullName.text,
+        ),
+      );
+      switch (result) {
+        case SuccessFB<UserModel>():
+          Navigator.of(context).pop();
+          fullName.clear();
+          email.clear();
+          password.clear();
+          confirmPassword.clear();
+          Navigator.of(context).pushReplacementNamed(LoginScreen.routeName);
+
+        case ErrorFB<UserModel>():
+          Navigator.of(context).pop();
+          AppDialog.showError(context, error: result.messageError);
+      }
     }
   }
 }

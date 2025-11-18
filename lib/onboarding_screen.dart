@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:taskey_app/const.dart';
-import 'package:taskey_app/screen/auth/screens/login_screen.dart';
-import 'package:taskey_app/widget/custom_animated_widget.dart';
-import 'package:taskey_app/widget/onboarding_model.dart';
+import 'package:taskey_app/auth/screens/login_screen.dart';
+import 'package:taskey_app/core/widget/custom_animated_widget.dart';
+import 'package:taskey_app/core/widget/onboarding_model.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
