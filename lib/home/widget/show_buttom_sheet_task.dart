@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:taskey_app/auth/data/firebase/firebase_database_user.dart';
 import 'package:taskey_app/auth/widgets/text_form_feild_widget.dart';
 import 'package:taskey_app/core/network/result_firebase.dart';
 import 'package:taskey_app/core/utils/app_asset.dart';

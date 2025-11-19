@@ -8,6 +8,7 @@ import 'package:taskey_app/auth/widgets/inkwell_widget.dart';
 import 'package:taskey_app/auth/widgets/text_form_feild_widget.dart';
 import 'package:taskey_app/core/utils/app_dialog.dart';
 import 'package:taskey_app/core/utils/valditor.dart';
+import 'package:taskey_app/home/screen/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -113,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.of(context).pop();
           email.clear();
           password.clear();
+          Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
         case ErrorFB<UserCredential>():
           Navigator.of(context).pop();
           AppDialog.showError(context, error: result.messageError);

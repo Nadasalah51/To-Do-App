@@ -11,5 +11,5 @@ class ErrorFB<T> extends ResultFB<T> {
 }
 
 ResultFB get getUser {
-  return SuccessFB(data: null);
+  return SuccessFB();
 }

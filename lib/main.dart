@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/auth/screens/login_screen.dart';
 import 'package:taskey_app/auth/screens/register_screen.dart';
@@ -19,7 +20,9 @@ class ToDoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: HomeScreen.routeName,
+      initialRoute: FirebaseAuth.instance.currentUser?.uid == null
+          ? LoginScreen.routeName
+          : HomeScreen.routeName,
       routes: {
         OnboardingScreen.routeName: (context) => OnboardingScreen(),
         RegisterScreen.routeName: (context) => RegisterScreen(),

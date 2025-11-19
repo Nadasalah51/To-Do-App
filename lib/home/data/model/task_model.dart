@@ -15,11 +15,16 @@ class TaskModel {
   int? priorityIndex;
   bool? isCompleted;
   Map<String, dynamic> toJoson() {
+    final normalDate = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+    );
     return {
       'id': id,
       'title': title,
       'description': description,
-      'selectedDate': selectedDate?.microsecondsSinceEpoch,
+      'selectedDate': normalDate.millisecondsSinceEpoch,
       'priorityIndex': priorityIndex,
       'isCompleted': isCompleted,
     };
