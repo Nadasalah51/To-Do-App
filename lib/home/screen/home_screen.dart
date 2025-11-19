@@ -148,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onDelete: () async {
                       await FirebaseTask.deleteTask(pendingTasks[index]);
                       getTask(_selectedValue);
+                      Navigator.of(context).pop();
                     },
                   ),
                   itemCount: pendingTasks.length,

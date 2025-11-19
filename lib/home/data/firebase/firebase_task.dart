@@ -64,7 +64,6 @@ abstract class FirebaseTask {
     try {
       final docRef = _getCollection.doc(task.id);
       await docRef.delete();
-
       return SuccessFB();
     } catch (e) {
       return ErrorFB(messageError: e.toString());

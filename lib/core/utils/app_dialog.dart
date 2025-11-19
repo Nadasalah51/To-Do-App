@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
 
@@ -59,6 +61,53 @@ abstract class AppDialog {
               child: Text('ok'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  static void showMessageAccespt(
+    BuildContext context,
+    void Function()? onDelete,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => PopScope(
+        child: AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 10,
+            children: [
+              Text(
+                'Are You sure ',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Color(0xff000000),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                    child: MaterialButton(
+                      onPressed: onDelete,
+                      color: Color(0xFFFE4A49),
+                      child: Text('yes'),
+                    ),
+                  ),
+                  Expanded(
+                    child: MaterialButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('no'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

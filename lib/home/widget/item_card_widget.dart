@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:taskey_app/core/utils/app_dialog.dart';
 import 'package:taskey_app/home/screen/edit_screen.dart';
 import 'package:taskey_app/home/widget/buttom_is_complete.dart';
 import 'package:taskey_app/home/widget/show_priority_task.dart';
@@ -27,8 +28,8 @@ class ItemCardWidget extends StatelessWidget {
         motion: ScrollMotion(),
         children: [
           SlidableAction(
-            onPressed: (context) => onDelete?.call(),
-
+            onPressed: (context) => 
+          AppDialog.showMessageAccespt(context, onDelete),
             backgroundColor: Color(0xFFFE4A49),
             foregroundColor: Colors.white,
             icon: Icons.delete,
