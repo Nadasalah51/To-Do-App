@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:taskey_app/auth/screens/login_screen.dart';
 import 'package:taskey_app/auth/screens/register_screen.dart';
+import 'package:taskey_app/home/screen/edit_screen.dart';
 import 'package:taskey_app/home/screen/home_screen.dart';
 import 'package:taskey_app/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +29,7 @@ class ToDoApp extends StatelessWidget {
         RegisterScreen.routeName: (context) => RegisterScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
+        EditScreen.routeName: (context) => EditScreen(),
       },
     );
   }

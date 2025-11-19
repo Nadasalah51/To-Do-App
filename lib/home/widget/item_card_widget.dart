@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:taskey_app/core/utils/app_asset.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:taskey_app/home/screen/edit_screen.dart';
+import 'package:taskey_app/home/widget/buttom_is_complete.dart';
+import 'package:taskey_app/home/widget/show_priority_task.dart';
 
 class ItemCardWidget extends StatelessWidget {
   const ItemCardWidget({
@@ -9,72 +12,75 @@ class ItemCardWidget extends StatelessWidget {
     required this.priority,
     required this.isCompleted,
     this.onPressed,
+    this.onDelete,
   });
   final String title;
   final DateTime dateTime;
   final int priority;
   final bool isCompleted;
   final void Function()? onPressed;
+  final void Function()? onDelete;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Color(0xff6A6E7C)),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
+    return Slidable(
+      startActionPane: ActionPane(
+        motion: ScrollMotion(),
         children: [
-          Radio(
-            value: false,
-            groupValue: true,
-            onChanged: (value) => onPressed,
+          SlidableAction(
+            onPressed: (context) => onDelete?.call(),
+
+            backgroundColor: Color(0xFFFE4A49),
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff24252C),
-                ),
-              ),
-              Text(
-                _formateDate(dateTime),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff6E6A7C),
-                ),
-              ),
-            ],
+          SlidableAction(
+            onPressed: (context) => Navigator.of(
+              context,
+            ).pushReplacementNamed(EditScreen.routeName),
+            backgroundColor: Color(0xff5F33E1),
+            foregroundColor: Colors.white,
+            icon: Icons.edit,
+            label: 'Edit',
           ),
-          Spacer(),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Color(0xff24252C)),
-            ),
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.only(right: 10, bottom: 4),
-            child: Row(
-              spacing: 5,
+        ],
+      ),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Color(0xff6A6E7C)),
+          borderRadius: BorderRadius.circular(10),
+          color: Color(0xffFFFFFF),
+        ),
+        child: Row(
+          spacing: 16,
+          children: [
+            ButtomIsComplete(onPressed: onPressed, isCompleted: isCompleted),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(AppAsset.flagIcon),
                 Text(
-                  priority.toString(),
+                  title,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                     color: Color(0xff24252C),
                   ),
                 ),
+                Text(
+                  _formateDate(dateTime),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xff6E6A7C),
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+            Spacer(),
+            ShowPriorityTask(priority: priority),
+          ],
+        ),
       ),
     );
   }

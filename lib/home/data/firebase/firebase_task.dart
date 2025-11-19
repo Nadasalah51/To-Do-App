@@ -48,4 +48,26 @@ abstract class FirebaseTask {
       return ErrorFB(messageError: e.toString());
     }
   }
+
+  static Future<ResultFB<void>> updateIsCompleted(TaskModel task) async {
+    try {
+      final docRef = _getCollection.doc(task.id);
+      await docRef.update({'isCompleted': !task.isCompleted!});
+
+      return SuccessFB();
+    } catch (e) {
+      return ErrorFB(messageError: e.toString());
+    }
+  }
+
+  static Future<ResultFB<void>> deleteTask(TaskModel task) async {
+    try {
+      final docRef = _getCollection.doc(task.id);
+      await docRef.delete();
+
+      return SuccessFB();
+    } catch (e) {
+      return ErrorFB(messageError: e.toString());
+    }
+  }
 }

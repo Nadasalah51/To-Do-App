@@ -20,7 +20,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
-  List<TaskModel> listOfTask = [];
+  List<TaskModel> pendingTasks = [];
+  List<TaskModel> completedTasks = [];
   DateTime _selectedValue = DateTime.now();
   @override
   void initState() {
@@ -33,7 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final result = await FirebaseTask.getTasks(date);
     switch (result) {
       case SuccessFB<List<TaskModel>>():
-        listOfTask = result.data ?? [];
+        final allTasks = result.data ?? [];
+        pendingTasks = allTasks
+            .where((task) => task.isCompleted == false)
+            .toList();
+
+        completedTasks = allTasks
+            .where((task) => task.isCompleted == true)
+            .toList();
       case ErrorFB<List<TaskModel>>():
         AppDialog.showError(context, error: result.messageError);
     }
@@ -118,19 +126,76 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _listOfTasks() {
     return Expanded(
-      child: listOfTask.isEmpty
+      child: pendingTasks.isEmpty && completedTasks.isEmpty
           ? _emptyState()
-          : ListView.separated(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              itemBuilder: (context, index) => ItemCardWidget(
-                title: listOfTask[index].title ?? ' ',
-                dateTime: listOfTask[index].selectedDate ?? DateTime.now(),
-                priority: listOfTask[index].priorityIndex ?? 1,
-                isCompleted: listOfTask[index].isCompleted ?? false,
-              ),
-              itemCount: listOfTask.length,
-              separatorBuilder: (BuildContext context, int index) =>
-                  SizedBox(height: 16),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  itemBuilder: (context, index) => ItemCardWidget(
+                    title: pendingTasks[index].title ?? ' ',
+                    dateTime:
+                        pendingTasks[index].selectedDate ?? DateTime.now(),
+                    priority: pendingTasks[index].priorityIndex ?? 1,
+                    isCompleted: pendingTasks[index].isCompleted ?? false,
+                    onPressed: () async {
+                      await FirebaseTask.updateIsCompleted(pendingTasks[index]);
+                      getTask(_selectedValue);
+                    },
+                    onDelete: () async {
+                      await FirebaseTask.deleteTask(pendingTasks[index]);
+                      getTask(_selectedValue);
+                    },
+                  ),
+                  itemCount: pendingTasks.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      SizedBox(height: 16),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 21, top: 20, bottom: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'Completed',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff24252C),
+                    ),
+                  ),
+                ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  itemBuilder: (context, index) => ItemCardWidget(
+                    title: completedTasks[index].title ?? ' ',
+                    dateTime:
+                        completedTasks[index].selectedDate ?? DateTime.now(),
+                    priority: completedTasks[index].priorityIndex ?? 1,
+                    isCompleted: completedTasks[index].isCompleted ?? false,
+                    onPressed: () async {
+                      await FirebaseTask.updateIsCompleted(
+                        completedTasks[index],
+                      );
+                      getTask(_selectedValue);
+                    },
+                    onDelete: () async {
+                      await FirebaseTask.deleteTask(completedTasks[index]);
+                      getTask(_selectedValue);
+                    },
+                  ),
+                  itemCount: completedTasks.length,
+                  separatorBuilder: (BuildContext context, int index) =>
+                      SizedBox(height: 16),
+                ),
+              ],
             ),
     );
   }
