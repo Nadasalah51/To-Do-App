@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:taskey_app/core/utils/app_dialog.dart';
-import 'package:taskey_app/home/screen/edit_screen.dart';
 import 'package:taskey_app/home/widget/buttom_is_complete.dart';
 import 'package:taskey_app/home/widget/show_priority_task.dart';
 
@@ -14,6 +13,7 @@ class ItemCardWidget extends StatelessWidget {
     required this.isCompleted,
     this.onPressed,
     this.onDelete,
+    this.onEdit,
   });
   final String title;
   final DateTime dateTime;
@@ -21,6 +21,7 @@ class ItemCardWidget extends StatelessWidget {
   final bool isCompleted;
   final void Function()? onPressed;
   final void Function()? onDelete;
+  final void Function()? onEdit;
   @override
   Widget build(BuildContext context) {
     return Slidable(
@@ -28,17 +29,15 @@ class ItemCardWidget extends StatelessWidget {
         motion: ScrollMotion(),
         children: [
           SlidableAction(
-            onPressed: (context) => 
-          AppDialog.showMessageAccespt(context, onDelete),
+            onPressed: (context) =>
+                AppDialog.showMessageAccespt(context, onDelete),
             backgroundColor: Color(0xFFFE4A49),
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: 'Delete',
           ),
           SlidableAction(
-            onPressed: (context) => Navigator.of(
-              context,
-            ).pushReplacementNamed(EditScreen.routeName),
+            onPressed: (context) => onEdit?.call(),
             backgroundColor: Color(0xff5F33E1),
             foregroundColor: Colors.white,
             icon: Icons.edit,

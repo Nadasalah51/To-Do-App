@@ -7,6 +7,7 @@ import 'package:taskey_app/core/utils/app_asset.dart';
 import 'package:taskey_app/core/utils/app_dialog.dart';
 import 'package:taskey_app/home/data/firebase/firebase_task.dart';
 import 'package:taskey_app/home/data/model/task_model.dart';
+import 'package:taskey_app/home/screen/edit_screen.dart';
 import 'package:taskey_app/home/widget/item_card_widget.dart';
 import 'package:taskey_app/home/widget/show_buttom_sheet_task.dart';
 
@@ -45,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case ErrorFB<List<TaskModel>>():
         AppDialog.showError(context, error: result.messageError);
     }
+    if (!mounted) return;
     isLoading = false;
     setState(() {});
   }
@@ -135,22 +137,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 24),
-                  itemBuilder: (context, index) => ItemCardWidget(
-                    title: pendingTasks[index].title ?? ' ',
-                    dateTime:
-                        pendingTasks[index].selectedDate ?? DateTime.now(),
-                    priority: pendingTasks[index].priorityIndex ?? 1,
-                    isCompleted: pendingTasks[index].isCompleted ?? false,
-                    onPressed: () async {
-                      await FirebaseTask.updateIsCompleted(pendingTasks[index]);
-                      getTask(_selectedValue);
-                    },
-                    onDelete: () async {
-                      await FirebaseTask.deleteTask(pendingTasks[index]);
-                      getTask(_selectedValue);
-                      Navigator.of(context).pop();
-                    },
-                  ),
+                  itemBuilder: (context, index) {
+                    final task = pendingTasks[index];
+                    return ItemCardWidget(
+                      title: pendingTasks[index].title ?? ' ',
+                      dateTime:
+                          pendingTasks[index].selectedDate ?? DateTime.now(),
+                      priority: pendingTasks[index].priorityIndex ?? 1,
+                      isCompleted: pendingTasks[index].isCompleted ?? false,
+                      onPressed: () => onCompletedButtom(index, pendingTasks),
+                      onDelete: () => onDeleteButtom(index, pendingTasks),
+                      onEdit: () => onEdit(task),
+                    );
+                  },
                   itemCount: pendingTasks.length,
                   separatorBuilder: (BuildContext context, int index) =>
                       SizedBox(height: 16),
@@ -175,23 +174,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 24),
-                  itemBuilder: (context, index) => ItemCardWidget(
-                    title: completedTasks[index].title ?? ' ',
-                    dateTime:
-                        completedTasks[index].selectedDate ?? DateTime.now(),
-                    priority: completedTasks[index].priorityIndex ?? 1,
-                    isCompleted: completedTasks[index].isCompleted ?? false,
-                    onPressed: () async {
-                      await FirebaseTask.updateIsCompleted(
-                        completedTasks[index],
-                      );
-                      getTask(_selectedValue);
-                    },
-                    onDelete: () async {
-                      await FirebaseTask.deleteTask(completedTasks[index]);
-                      getTask(_selectedValue);
-                    },
-                  ),
+                  itemBuilder: (context, index) {
+                    final task = completedTasks[index];
+                    return ItemCardWidget(
+                      title: completedTasks[index].title ?? ' ',
+                      dateTime:
+                          completedTasks[index].selectedDate ?? DateTime.now(),
+                      priority: completedTasks[index].priorityIndex ?? 1,
+                      isCompleted: completedTasks[index].isCompleted ?? false,
+                      onPressed: () => onCompletedButtom(index, completedTasks),
+                      onDelete: () => onDeleteButtom(index, completedTasks),
+                      onEdit: () => onEdit(task),
+                    );
+                  },
                   itemCount: completedTasks.length,
                   separatorBuilder: (BuildContext context, int index) =>
                       SizedBox(height: 16),
@@ -219,5 +214,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  void onCompletedButtom(int index, List<TaskModel> listOfTask) async {
+    final taskToUpdate = listOfTask[index];
+    final isCurrentlyCompleted = taskToUpdate.isCompleted!;
+    taskToUpdate.isCompleted = !isCurrentlyCompleted;
+    listOfTask.removeAt(index);
+    if (taskToUpdate.isCompleted == true) {
+      completedTasks.add(taskToUpdate);
+    } else {
+      pendingTasks.add(taskToUpdate);
+    }
+    setState(() {});
+    await FirebaseTask.updateIsCompleted(taskToUpdate);
+  }
+
+  void onDeleteButtom(int index, List<TaskModel> listOfTask) async {
+    await FirebaseTask.deleteTask(listOfTask[index]);
+    Navigator.of(context).pop();
+    getTask(_selectedValue);
+  }
+
+  void onEdit(TaskModel task) {
+    Navigator.of(context)
+        .pushNamed(EditScreen.routeName, arguments: task)
+        .then((_) => getTask(_selectedValue));
+    return null;
   }
 }

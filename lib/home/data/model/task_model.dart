@@ -37,7 +37,7 @@ class TaskModel {
       description: json['description'],
       priorityIndex: json['priorityIndex'],
       selectedDate: DateTime.fromMillisecondsSinceEpoch(json['selectedDate']),
-      isCompleted: json['isCompleted'],
+      isCompleted: json['isCompleted'] as bool?,
     );
   }
 }

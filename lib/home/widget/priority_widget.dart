@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:taskey_app/const.dart';
 import 'package:taskey_app/core/utils/app_asset.dart';
 
 class PriorityWidget extends StatefulWidget {
-  const PriorityWidget({super.key, required this.onTap});
+  const PriorityWidget({
+    super.key,
+    required this.onTap,
+    this.initialPriority = 1,
+  });
   final void Function(int) onTap;
-
+  final int initialPriority;
   @override
   State<PriorityWidget> createState() => _PriorityWidgetState();
 }
@@ -12,7 +17,12 @@ class PriorityWidget extends StatefulWidget {
 class _PriorityWidgetState extends State<PriorityWidget> {
   List<int> priorityList = List.generate(10, (index) => index + 1);
   bool isSelected = false;
-  int selectedIndex = 1;
+  late int selectedIndex;
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialPriority;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -29,20 +39,49 @@ class _PriorityWidgetState extends State<PriorityWidget> {
           Divider(),
         ],
       ),
-      content: Wrap(
-        children: priorityList
-            .map(
-              (index) => _PriorityItemWidget(
-                index: index,
-                isSelected: selectedIndex == index,
-                onTap: () {
-                  selectedIndex = index;
-                  widget.onTap(index);
-                  setState(() {});
-                },
+      content: Column(
+        spacing: 15,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Wrap(
+            children: priorityList
+                .map(
+                  (index) => _PriorityItemWidget(
+                    index: index,
+                    isSelected: selectedIndex == index,
+                    
+                    onTap: () {
+                      selectedIndex = index;
+                      setState(() {});
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: MaterialButton(
+                  onPressed: () {
+                    widget.onTap(selectedIndex);
+
+                    Navigator.of(context).pop();
+                  },
+                  color: themeColor,
+                  child: Text('Save'),
+                ),
               ),
-            )
-            .toList(),
+              Expanded(
+                child: MaterialButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancle'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
