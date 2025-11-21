@@ -8,7 +8,10 @@ import 'package:taskey_app/auth/widgets/inkwell_widget.dart';
 import 'package:taskey_app/auth/widgets/text_form_feild_widget.dart';
 import 'package:taskey_app/core/utils/app_dialog.dart';
 import 'package:taskey_app/core/utils/valditor.dart';
+import 'package:taskey_app/home/data/firebase/firebase_task.dart';
+import 'package:taskey_app/home/data/model/task_model.dart';
 import 'package:taskey_app/home/screen/home_screen.dart';
+import 'package:taskey_app/core/utils/show_welcome_notification.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -109,9 +112,32 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email.text,
         password: password.text,
       );
+      Navigator.of(context).pop();
       switch (result) {
         case SuccessFB<UserCredential>():
-          Navigator.of(context).pop();
+          final user = FirebaseAuth.instance.currentUser;
+          String userName = 'Taskey User';
+          if (user != null) {
+            final nameResult = await FBAUser.getUserName(user.uid);
+
+            if (nameResult is SuccessFB<String>) {
+              userName = nameResult.data!;
+            }
+          }
+          DateTime today = DateTime.now();
+          final tasksResult = await FirebaseTask.getTasks(today);
+          if (tasksResult is SuccessFB<List<TaskModel>>) {
+            final allTasksToday = tasksResult.data ?? [];
+            final totalTasksCount = allTasksToday.length;
+            final pendingTasksCount = allTasksToday
+                .where((task) => task.isCompleted == false)
+                .length;
+            await showWelcomeNotification(
+              userName: userName,
+              totalTasksCount: totalTasksCount,
+              pendingTasksCount: pendingTasksCount,
+            );
+          }
           email.clear();
           password.clear();
           Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);

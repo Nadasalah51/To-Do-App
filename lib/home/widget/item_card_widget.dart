@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:taskey_app/core/utils/app_dialog.dart';
+import 'package:taskey_app/home/data/model/task_model.dart';
 import 'package:taskey_app/home/widget/buttom_is_complete.dart';
 import 'package:taskey_app/home/widget/show_priority_task.dart';
 
 class ItemCardWidget extends StatelessWidget {
   const ItemCardWidget({
     super.key,
+    required this.task,
+    this.onPressed,
+    this.onDelete,
+    this.onEdit,
     required this.title,
     required this.dateTime,
     required this.priority,
     required this.isCompleted,
-    this.onPressed,
-    this.onDelete,
-    this.onEdit,
   });
   final String title;
   final DateTime dateTime;
   final int priority;
   final bool isCompleted;
+  final TaskModel task;
   final void Function()? onPressed;
   final void Function()? onDelete;
   final void Function()? onEdit;
@@ -30,7 +33,7 @@ class ItemCardWidget extends StatelessWidget {
         children: [
           SlidableAction(
             onPressed: (context) =>
-                AppDialog.showMessageAccespt(context, onDelete),
+                AppDialog.showMessageAccespt(context, task, onDelete),
             backgroundColor: Color(0xFFFE4A49),
             foregroundColor: Colors.white,
             icon: Icons.delete,

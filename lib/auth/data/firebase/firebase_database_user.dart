@@ -48,4 +48,24 @@ class FBAUser {
       return ErrorFB(messageError: e.toString());
     }
   }
+
+static Future<ResultFB<String>> getUserName(String uid) async {
+    try {
+      final userDoc = await _getCollection.doc(uid).get();
+
+      if (userDoc.exists) {
+        final userModel = userDoc.data();
+        if (userModel?.name != null) {
+          return SuccessFB(data: userModel!.name!);
+        } else {
+          return ErrorFB(messageError: 'اسم المستخدم غير موجود.');
+        }
+      } else {
+        return ErrorFB(messageError: 'بيانات المستخدم غير موجودة في قاعدة البيانات.');
+      }
+    } catch (e) {
+      return ErrorFB(messageError: e.toString());
+    }
+  }
+
 }

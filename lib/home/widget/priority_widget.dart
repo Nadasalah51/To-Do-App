@@ -49,7 +49,7 @@ class _PriorityWidgetState extends State<PriorityWidget> {
                   (index) => _PriorityItemWidget(
                     index: index,
                     isSelected: selectedIndex == index,
-                    
+
                     onTap: () {
                       selectedIndex = index;
                       setState(() {});
@@ -107,7 +107,7 @@ class _PriorityItemWidget extends StatelessWidget {
 
           color: isSelected ? Color(0xff5F33E1) : null,
         ),
-        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 20),
+        padding: EdgeInsets.symmetric(vertical: 7, horizontal: 16),
         margin: EdgeInsets.only(left: 16, top: 12),
         child: Column(
           spacing: 5,

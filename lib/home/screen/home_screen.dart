@@ -83,17 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         spacing: 10,
         children: [
-          DatePicker(
-            DateTime.now(),
-            height: 100,
-            initialSelectedDate: DateTime.now(),
-            selectionColor: Color(0xff5F33E1),
-            selectedTextColor: Colors.white,
-            onDateChange: (date) {
-              _selectedValue = date;
-              getTask(date);
-              setState(() {});
-            },
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DatePicker(
+              DateTime.now().subtract(Duration(days: 2)),
+              height: 100,
+              initialSelectedDate: DateTime.now(),
+              daysCount: 30,
+              selectionColor: Color(0xff5F33E1),
+              selectedTextColor: Colors.white,
+              onDateChange: (date) {
+                _selectedValue = date;
+                getTask(date);
+                setState(() {});
+              },
+            ),
           ),
           isLoading ? _loadingState() : _listOfTasks(),
         ],
@@ -140,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final task = pendingTasks[index];
                     return ItemCardWidget(
+                      task: task,
                       title: pendingTasks[index].title ?? ' ',
                       dateTime:
                           pendingTasks[index].selectedDate ?? DateTime.now(),
@@ -177,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final task = completedTasks[index];
                     return ItemCardWidget(
+                      task: task,
                       title: completedTasks[index].title ?? ' ',
                       dateTime:
                           completedTasks[index].selectedDate ?? DateTime.now(),
@@ -240,6 +246,5 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.of(context)
         .pushNamed(EditScreen.routeName, arguments: task)
         .then((_) => getTask(_selectedValue));
-    return null;
   }
 }

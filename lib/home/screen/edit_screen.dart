@@ -7,7 +7,6 @@ import 'package:taskey_app/core/utils/app_dialog.dart';
 import 'package:taskey_app/core/utils/valditor.dart';
 import 'package:taskey_app/home/data/firebase/firebase_task.dart';
 import 'package:taskey_app/home/data/model/task_model.dart';
-import 'package:taskey_app/home/screen/home_screen.dart';
 import 'package:taskey_app/home/widget/buttom_is_complete.dart';
 import 'package:taskey_app/home/widget/priority_widget.dart';
 
@@ -56,7 +55,7 @@ class _EditScreenState extends State<EditScreen> {
           spacing: 30,
           children: [
             GestureDetector(
-              onTap: () => Navigator.of(context).pop,
+              onTap: () => Navigator.of(context).pop(),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
@@ -188,7 +187,9 @@ class _EditScreenState extends State<EditScreen> {
               ],
             ),
             GestureDetector(
-              // onTap: AppDialog.showMessageAccespt(context, onDeleteButtom),
+              onTap: () =>
+                  AppDialog.showMessageAccespt(context,widget.task, onDeleteButtom,),
+              //  AppDialog.showMessageAccespt(context, onDelete),
               child: Row(
                 spacing: 8,
                 children: [
@@ -233,11 +234,18 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 
-  // void onDeleteButtom(int index, List<TaskModel> listOfTask) async {
-  //   await FirebaseTask.deleteTask(listOfTask[index]);
-  //   Navigator.of(context).pop();
-  //   getTask(_selectedValue);
-  // }
+  void onDeleteButtom() async {
+    AppDialog.showLoading(context);
+    final result = await FirebaseTask.deleteTask(widget.task);
+    Navigator.of(context).pop();
+    if (result is SuccessFB) {
+      Navigator.of(context).pop();
+    } else if (result is ErrorFB) {
+      AppDialog.showError(context, error: result.messageError);
+    }
+    Navigator.of(context).pop();
+  }
+
   String _formateDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }

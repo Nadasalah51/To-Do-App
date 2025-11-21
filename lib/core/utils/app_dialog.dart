@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taskey_app/const.dart';
+import 'package:taskey_app/home/data/model/task_model.dart';
 
 abstract class AppDialog {
   static void showLoading(BuildContext context) {
@@ -66,6 +67,7 @@ abstract class AppDialog {
 
   static void showMessageAccespt(
     BuildContext context,
+    TaskModel title,
     void Function()? onDelete,
   ) {
     showDialog(
@@ -76,12 +78,24 @@ abstract class AppDialog {
             mainAxisSize: MainAxisSize.min,
             spacing: 10,
             children: [
-              Text(
-                'Are You sure ',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Color(0xff000000),
-                  fontWeight: FontWeight.w400,
+              Text.rich(
+                TextSpan(
+                  text: 'Are You sure you want delete ',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color(0xff000000),
+                    fontWeight: FontWeight.w400,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '${title.title} ?',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color(0xffFF5454),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Row(

@@ -18,9 +18,15 @@ class ShowButtomSheetTask extends StatefulWidget {
 class _ShowButtomSheetTaskState extends State<ShowButtomSheetTask> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsetsGeometry.symmetric(horizontal: 24, vertical: 18),
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: 30 + keyboardHeight,
+        left: 24,
+        right: 24,
+        top: 15,
+      ),
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 12,
@@ -62,6 +68,7 @@ class _ShowButtomSheetTaskState extends State<ShowButtomSheetTask> {
                 icon(
                   imagePath: AppAsset.flagIcon,
                   onpressed: () {
+                    FocusScope.of(context).unfocus();
                     showDialog(
                       context: context,
                       builder: (context) => PriorityWidget(
